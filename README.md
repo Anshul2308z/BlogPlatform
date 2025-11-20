@@ -8,3 +8,6 @@ Structure:
 - docs/      (design & API docs)
 
 Run instructions: see backend/README.md and frontend/README.md after scaffold.
+
+Info about some libs: 
+- ms : Use this package to easily convert various time formats to milliseconds.
