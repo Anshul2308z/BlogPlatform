@@ -3,10 +3,12 @@
 // src/routes/auth.js
 import express from 'express';
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 import { createAccessToken, createRefreshToken, verifyRefreshToken, hashToken } from '../utils/tokens.js';
 import RefreshToken from '../models/RefreshToken.js';
+
+import { loginSchema, signupSchema } from '../src/validation/authSchemas.js';
+import { validate } from '../middleware/validate.js';
 
 const router = express.Router();
 
@@ -63,7 +65,7 @@ async function sendTokens(res, user, { ip = '', userAgent = '' } = {}) {
  * POST /api/auth/signup
  * creates a user, issues tokens (access in body, refresh in cookie)
  */
-router.post('/signup', async (req, res, next) => {
+router.post('/signup', validate(signupSchema), async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
     if (!email || !password) return res.status(400).json({ error: 'email and password required' });
@@ -85,7 +87,7 @@ router.post('/signup', async (req, res, next) => {
  * POST /api/auth/login
  * issues tokens
  */
-router.post('/login', async (req, res, next) => {
+router.post('/login', validate(loginSchema), async (req, res, next) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) return res.status(400).json({ error: 'email and password required' });
@@ -108,7 +110,7 @@ router.post('/login', async (req, res, next) => {
  * rotate refresh token -> issue new access token (+ optional new refresh cookie)
  * expects refresh token in httpOnly cookie `nb_refresh`
  */
-router.post('/refresh', async (req, res, next) => {
+router.post('/refresh',  async (req, res, next) => {
   try {
     const raw = req.cookies?.[REFRESH_COOKIE_NAME] || req.body?.refreshToken;
     if (!raw) return res.status(401).json({ error: 'no refresh token provided' });

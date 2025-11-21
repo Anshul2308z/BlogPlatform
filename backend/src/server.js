@@ -4,7 +4,6 @@ import helmet from 'helmet';
 import cors from 'cors';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
-import mongoose from 'mongoose';
 
 import healthRoutes from '../routes/health.js';
 import authRoutes from '../routes/auth.js';

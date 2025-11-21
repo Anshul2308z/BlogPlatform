@@ -5,8 +5,11 @@ import slugify from 'slugify';
 import { authMiddleware } from '../middleware/authMiddleware.js';
 const router = express.Router();
 
+import { createPostSchema } from '../src/validation/postSchemas.js';
+import { validate } from '../middleware/validate.js';
+
 // create post (no auth check yet)
-router.post('/', authMiddleware,async (req, res, next) => {
+router.post('/', authMiddleware, validate(createPostSchema),async (req, res, next) => {
   try {
     const { title, content, tags = [], summary } = req.body;
     if (!title) return res.status(400).json({ error: 'title required' });
